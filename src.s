@@ -23,8 +23,8 @@
 	.byte 0x0,  0x0,  0x0,  0x0,  0x0   // NULL 
 	.byte 0x0,  0x0,  0x0,  0x0,  0x1   // HEAT
     .byte 0x0,  0x1,  0x0,  0x0,  0x0   // AQUA
-    .byte 0x0,  0x0,  0x1,  0x0,  0x0   // ELEC
-    .byte 0x0,  0x0,  0x0,  0x1,  0x0   // WOOD
+	.byte 0x0,  0x0,  0x1,  0x0,  0x0   // ELEC
+	.byte 0x0,  0x0,  0x0,  0x1,  0x0   // WOOD
 
 	.org SECONDARY_ELEM_WEAKNESS_ADDR
 	// hook secondary element weakness function
@@ -55,7 +55,15 @@ ReverseSecondaryElementWeaknessesHookEnd:
 	// change the element that does 2x against bblwrap
 	.org BBLWRAP_ELEM_COMPARE_ADDR
 	cmp r1, ELEM_HEAT
-	
+
+	// change the element that does 2x on grass
+	.org HEAT_2x_GRASS_COMPARE_ADDR
+	cmp r1, ELEM_ELEC
+
+	// change the element that removes grass
+	.org HEAT_REMOVE_GRASS_COMPARE_ADDR
+	cmp r0, ELEM_ELEC
+
 	.headersize 0x8000000
 	// increase iwram code size (overwrites some garbage directly after)
 	.org 0x8000210
