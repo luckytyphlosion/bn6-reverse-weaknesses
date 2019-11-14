@@ -11,7 +11,7 @@
 	ELEM_SWORD  equ 0x80
 
 	.open INPUT_FILE, OUTPUT_FILE, 0x3005B00 - 0x1d6000
-	.org 0x3007444
+	.org PRIMARY_ELEM_WEAKNESS_ADDR
 	// row is defending element, col is attacking element
 	//    NULL  HEAT  AQUA  ELEC  WOOD
 	.byte 0x0,  0x0,  0x0,  0x0,  0x0   // NULL 
@@ -20,17 +20,17 @@
     .byte 0x0,  0x0,  0x1,  0x0,  0x0   // ELEC
     .byte 0x0,  0x0,  0x0,  0x1,  0x0   // WOOD
 
-	.org 0x30074e2
+	.org SECONDARY_ELEM_WEAKNESS_ADDR
 	// hook secondary element weakness function
 	b ReverseSecondaryElementWeaknessesHook
 ReverseSecondaryElementWeaknessesPostHook:
 
 	// fix secondary sword beating break
-	.org 0x30074e8
+	.org SECONDARY_ELEM_WEAKNESS_ADDR + 6
 	cmp r0, #ELEM_CURSOR // r0 holds the defending collision's secondary element weakness, the element weak to cursor is break, and sword beats break, so change this element to cursor (from wind)
 
 	// iwram code freespace
-	.org 0x30079d4
+	.org IWRAM_FREESPACE
 ReverseSecondaryElementWeaknessesHook:
 	mov r2, 0
 	push {r3}
