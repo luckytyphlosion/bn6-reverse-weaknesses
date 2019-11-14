@@ -5,6 +5,12 @@
 	IWRAM_CODE_ROM_START equ 0x81d6000
 	IWRAM_CODE_RAM_START equ 0x3005B00
 
+	ELEM_NULL equ 0x00
+	ELEM_HEAT equ 0x01
+	ELEM_AQUA equ 0x02
+	ELEM_ELEC equ 0x03
+	ELEM_WOOD equ 0x04
+
 	ELEM_BREAK  equ 0x10
 	ELEM_WIND   equ 0x20
 	ELEM_CURSOR equ 0x40
@@ -46,9 +52,18 @@ ReverseSecondaryElementWeaknessesHook:
 	.align 4, 0
 ReverseSecondaryElementWeaknessesHookEnd:
 
+	// change the element that does 2x against bblwrap
+	.org BBLWRAP_ELEM_COMPARE_ADDR
+	cmp r1, ELEM_HEAT
+	
 	.headersize 0x8000000
 	// increase iwram code size (overwrites some garbage directly after)
 	.org 0x8000210
-	.word 0x1ED4 + (ReverseSecondaryElementWeaknessesHookEnd - ReverseSecondaryElementWeaknessesHook)
+	.word IWRAM_BLOB_SIZE + (ReverseSecondaryElementWeaknessesHookEnd - ReverseSecondaryElementWeaknessesHook)
+
+	// change the offset that is read to check if the element
+	// that removes bblwrap has any damage
+	.org BBLWRAP_ELEM_DAMAGE_OFFSET_ADDR
+	mov r1, 0x96 // base is 0x94, 0x94 + ELEM_HEAT * 2
 
 	.close
