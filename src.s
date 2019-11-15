@@ -78,6 +78,14 @@ ReverseSecondaryElementWeaknessesHookEnd:
 	.org BBLWRAP_ELEM_DAMAGE_OFFSET_ADDR
 	mov r1, 0x96 // base is 0x94, 0x94 + ELEM_HEAT * 2
 
+	// change the element that hits through riskyhoney's hive
+	.org HIVE_HEAT_PANEL_DAMAGE_OFFSET_ADDR
+	mov r1, 0x88 // base is 0x82, 0x82 + ELEM_ELEC * 2
+
+	// have heat damage count towards bee spawning
+	.org HIVE_HEAT_PANEL_DAMAGE_OFFSET_ADDR + 14
+	ldrh r1, [r0, 0x84 - 0x82] // base is 0x82, 0x82 + ELEM_HEAT * 2 - 0x82
+
 	// test battle for heat on bubble
 	.if 0
 		.org readu32(INPUT_FILE, HEATMAN_OR_SPOUTMAN_BATTLE_SETTINGS_ADDR + 0xc - 0x8000000) + 0x4
