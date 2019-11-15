@@ -64,6 +64,10 @@ ReverseSecondaryElementWeaknessesHookEnd:
 	.org HEAT_REMOVE_GRASS_COMPARE_ADDR
 	cmp r0, ELEM_ELEC
 
+	// change the element that does 2x against bubbled
+	.org ELEC_2x_BUBBLE_COMPARE_ADDR
+	cmp r0, ELEM_HEAT
+
 	.headersize 0x8000000
 	// increase iwram code size (overwrites some garbage directly after)
 	.org 0x8000210
@@ -73,5 +77,20 @@ ReverseSecondaryElementWeaknessesHookEnd:
 	// that removes bblwrap has any damage
 	.org BBLWRAP_ELEM_DAMAGE_OFFSET_ADDR
 	mov r1, 0x96 // base is 0x94, 0x94 + ELEM_HEAT * 2
+
+	// test battle for heat on bubble
+	.if 0
+		.org readu32(INPUT_FILE, HEATMAN_OR_SPOUTMAN_BATTLE_SETTINGS_ADDR + 0xc - 0x8000000) + 0x4
+		.byte 0x11
+		.byte 0x25
+		.halfword 0x55
+		.byte 0x11
+		.byte 0x26
+		.halfword 0x61
+		.byte 0x11
+		.byte 0x14
+		.halfword 0x2b
+		.byte 0xf0
+	.endif
 
 	.close
