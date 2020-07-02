@@ -101,4 +101,27 @@ ReverseSecondaryElementWeaknessesHookEnd:
 		.byte 0xf0
 	.endif
 
+	.org SHUFFLE_FOLDER_SLICE_ADDR
+ShuffleFolderSlice:
+	push {r4-r6,lr}
+	sub r4, r1, 1
+	beq @@done
+@@loop:
+	push {r0}
+	bl GetPositiveSignedRNG1
+	add r1, r4, 1
+	swi 6 // r1 = rand() % (r1 + 1)
+	pop {r0}
+
+	add r1, r1, r1
+	add r3, r4, r4
+	ldrh r5, [r0,r1]
+	ldrh r6, [r0,r3]
+	strh r6, [r0,r1]
+	strh r5, [r0,r3]
+	sub r4, 1
+	bne @@loop
+@@done:
+	pop {r4-r6,pc}
+
 	.close
