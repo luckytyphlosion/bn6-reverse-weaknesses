@@ -16,6 +16,9 @@
 	ELEM_CURSOR equ 0x40
 	ELEM_SWORD  equ 0x80
 
+	oJoypad_Held equ 0x00
+	JOYPAD_START equ 0x08
+
 	.open INPUT_FILE, OUTPUT_FILE, 0x3005B00 - 0x1d6000
 	.org PRIMARY_ELEM_WEAKNESS_ADDR
 	// row is defending element, col is attacking element
@@ -123,5 +126,33 @@ ShuffleFolderSlice:
 	bne @@loop
 @@done:
 	pop {r4-r6,pc}
+
+	.org CUST_MENU_A_JUMPTABLE_ADDR+4
+	.word CustMenuPressAFunc_OK+1
+	.skip 4
+	.word CustMenuPressAFunc_Block+1
+
+	.org CUST_OK_A_START_FREESPACE
+	.area 0x5E22 - 0x5DF0
+CustMenuPressAFunc_OK:
+	ldrh r0, [r7,oJoypad_Held]
+	mov r1, JOYPAD_START
+	tst r0, r1
+	beq CustMenuPressAFunc_NotHoldingStart
+	ldr r0, =sub_8028D3A+1
+	bx r0
+CustMenuPressAFunc_Block:
+	ldrh r0, [r7,oJoypad_Held]
+	mov r1, JOYPAD_START
+	tst r0, r1
+	beq CustMenuPressAFunc_NotHoldingStart
+	ldr r0, =sub_8028DBC+1
+	bx r0
+CustMenuPressAFunc_NotHoldingStart:
+	push {lr}
+	bl loc_8028D30
+// loc_8028D30 returns back to control
+	.pool
+	.endarea
 
 	.close
